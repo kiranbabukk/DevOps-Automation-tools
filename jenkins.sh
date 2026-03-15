@@ -1,17 +1,32 @@
-#STEP-1: Installing Git and Maven
-yum install git maven -y
+# Update system
+sudo apt update -y
 
-#STEP-2: Repo Information (jenkins.io --> download -- > redhat)
-sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
-sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+# Install Java (required for Jenkins)
+sudo apt install -y fontconfig openjdk-21-jre
 
-#STEP-3: Download Java 21 and Jenkins
-sudo yum install java-21-amazon-corretto -y
-yum install jenkins -y
-sudo mount -o remount,size=2G /tmp
-#STEP-4: Start and check the JENKINS Status
-systemctl start jenkins.service
-systemctl status jenkins.service
+# Verify Java installation
+java -version
 
-#STEP-5: Auto-Start Jenkins
-chkconfig jenkins on
+# Create keyrings directory (if not present)
+sudo mkdir -p /etc/apt/keyrings
+
+# Download Jenkins repository key
+sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
+
+# Add Jenkins repository
+echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+# Update package list again
+sudo apt update -y
+
+# Install Jenkins
+sudo apt install -y jenkins
+
+# Start Jenkins service
+sudo systemctl start jenkins
+
+# Enable Jenkins on boot
+sudo systemctl enable jenkins
+
+# Check Jenkins status
+sudo systemctl status jenkins
